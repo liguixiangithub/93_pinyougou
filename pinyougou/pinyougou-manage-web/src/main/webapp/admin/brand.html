@@ -35,26 +35,28 @@
                 });
             };
 
-            $scope.paginationConf={
+            $scope.paginationConf = {
                 //页号
-                currentPage:1,
+                currentPage: 1,
                 //页大小
-                itemsPerPage:8,
+                itemsPerPage: 8,
                 //总页数
-                totalItems:0,
+                totalItems: 0,
                 //页显示数选择
-                perPageOptions:[5,15,20,25,30],
+                perPageOptions: [5, 15, 20, 25, 30],
                 //如果页号发生改变发生的事件
-                onChange:function () {
+                onChange: function () {
                     $scope.reloadList();
                 }
             };
-            $scope.reloadList=function () {
-                $scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
+
+            $scope.reloadList = function () {
+                //$scope.findPage($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
+                $scope.search($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
             };
 
-            $scope.findPage=function (page,rows) {
-                $http.get("../brand/findPage.do?page="+page+"&rows="+rows).success(function (response) {
+            $scope.findPage = function (page, rows) {
+                $http.get("../brand/findPage.do?page=" + page + "&rows=" + rows).success(function (response) {
 
                     $scope.paginationConf.totalItems = response.total;
 
@@ -64,17 +66,87 @@
                 });
             };
 
+            //根据主键查询（回显品牌）
+            $scope.findOne = function (id) {
+                $http.get("../brand/findOne.do?id=" + id).success(function (response) {
+                    $scope.entity = response;
+                });
+            };
 
+            //保存数据
+            $scope.save = function () {
+
+                var method = "add";
+
+                if ($scope.entity.id != null) {
+                    method = "update";
+                }
+
+                $http.post("../brand/" + method + ".do", $scope.entity).success(function (response) {
+                    if (response.success) {
+                        $scope.reloadList();
+                    } else {
+                        alert(response.message)
+                    }
+                });
+            };
+
+
+            $scope.selectedIds = [];
+
+            $scope.updateSelection = function ($event, id) {
+                if ($event.target.checked) {
+                    $scope.selectedIds.push(id);
+                } else {
+                    var index = $scope.selectedIds.indexOf(id);
+                    $scope.selectedIds.splice(index, 1);
+                }
+
+            };
+
+
+            $scope.delete = function () {
+
+                if ($scope.selectedIds.length < 1) {
+                    alert("请选择需要删除的品牌id");
+                    return;
+                }
+                if (confirm("确定要删除这些记录吗")) {
+                    $http.get("../brand/delete.do?ids=" + $scope.selectedIds, $scope.selectedIds).success(function (response) {
+                        if (response.success) {
+                            $scope.reloadList();
+                            $scope.selectedIds = [];
+
+                        } else {
+                            response.message;
+                        }
+                    });
+                }
+            };
+
+            //定义空查询对象
+            $scope.searchEntity = {};
+
+            //名称，首字母模糊查询
+            $scope.search = function (page, rows) {
+
+                $http.post("../brand/search.do?page=" + page + "&rows=" + rows, $scope.searchEntity).success(function (response) {
+                    $scope.list = response.rows;
+
+                    $scope.paginationConf.totalItems = response.total;
+                });
+
+            };
         });
 
     </script>
 
 
 </head>
-<body ng-app="pinyougou" ng-controller="brandController" ng-init="" class="hold-transition skin-red sidebar-mini">
+<body ng-app="pinyougou" ng-controller="brandController" ng-init="save()" class="hold-transition skin-red sidebar-mini">
 <!-- .box-body -->
 <div class="box-header with-border">
-    <h3 class="box-title">品牌管理</h3>
+    <h3 class="box-title">品牌管理</h3>{{selectedIds}}
 </div>
 
 <div class="box-body">
@@ -87,9 +159,11 @@
             <div class="form-group form-inline">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" title="新建" data-toggle="modal"
-                            data-target="#editModal"><i class="fa fa-file-o"></i> 新建
+                            data-target="#editModal" ng-click="entity={}"><i class="fa fa-file-o"></i> 新建
                     </button>
-                    <button type="button" class="btn btn-default" title="删除"><i class="fa fa-trash-o"></i> 删除</button>
+                    <button type="button" class="btn btn-default" ng-click="delete()" title="删除"><i
+                            class="fa fa-trash-o"></i> 删除
+                    </button>
                     <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i
                             class="fa fa-refresh"></i> 刷新
                     </button>
@@ -97,10 +171,11 @@
             </div>
         </div>
         <div class="box-tools pull-right">
+            {{searchEntity}}
             <div class="has-feedback">
-                品牌名称：<input>
-                品牌首字母：<input>
-                <button class="btn btn-default">查询</button>
+                品牌名称：<input ng-model="searchEntity.name">
+                品牌首字母：<input ng-model="searchEntity.firstChar">
+                <button class="btn btn-default" ng-click="reloadList()">查询</button>
             </div>
         </div>
         <!--工具栏/-->
@@ -120,12 +195,13 @@
             </thead>
             <tbody>
             <tr ng-repeat="entity in list">
-                <td><input type="checkbox"></td>
+                <td><input type="checkbox" ng-click="updateSelection($event,entity.id)"></td>
                 <td>{{entity.id}}</td>
                 <td>{{entity.name}}</td>
                 <td>{{entity.firstChar}}</td>
                 <td class="text-center">
-                    <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal">修改
+                    <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal"
+                            ng-click="findOne(entity.id)">修改
                     </button>
                 </td>
             </tr>
@@ -142,6 +218,7 @@
 
 
 </div>
+{{entity}}
 <!-- /.box-body -->
 
 <!-- 编辑窗口 -->
@@ -150,22 +227,23 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">品牌编辑</h3>
+                <h3 id="myModalLabel">品牌编辑{{entity}}</h3>
             </div>
+
             <div class="modal-body">
                 <table class="table table-bordered table-striped" width="800px">
                     <tr>
                         <td>品牌名称</td>
-                        <td><input class="form-control" placeholder="品牌名称"></td>
+                        <td><input class="form-control" ng-model="entity.name" placeholder="品牌名称"></td>
                     </tr>
                     <tr>
                         <td>首字母</td>
-                        <td><input class="form-control" placeholder="首字母"></td>
+                        <td><input class="form-control" ng-model="entity.firstChar" placeholder="首字母"></td>
                     </tr>
                 </table>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+                <button class="btn btn-success" data-dismiss="modal" ng-click="save()" aria-hidden="true">保存</button>
                 <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
             </div>
         </div>

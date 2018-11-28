@@ -1,11 +1,14 @@
 package com.pinyougou.sellergoods.service;
 
 import com.pinyougou.pojo.TbBrand;
-import com.pinyougou.service.baseService;
+import com.pinyougou.service.BaseService;
+import com.pinyougou.vo.PageResult;
+import com.pinyougou.vo.Result;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface BrandService extends baseService<TbBrand> {
+public interface BrandService extends BaseService<TbBrand> {
     /**
      * 查询全部品牌
      * @return
@@ -20,4 +23,6 @@ public interface BrandService extends baseService<TbBrand> {
      */
 
     List<TbBrand> testPage(Integer page, Integer rows);
+
+    PageResult search(Integer page, Integer rows, TbBrand brand);
 }
