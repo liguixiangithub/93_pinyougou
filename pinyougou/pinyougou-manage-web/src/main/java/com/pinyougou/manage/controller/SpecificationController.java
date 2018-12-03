@@ -9,6 +9,7 @@ import com.pinyougou.vo.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/specification")
 @RestController
@@ -16,6 +17,15 @@ public class SpecificationController {
 
     @Reference
     private SpecificationService specificationService;
+
+    /**
+     * 查询规格列表
+     * @return 返回规格列表，数据结构（json格式）: ["id":1,"text":"内存"]
+     */
+    @GetMapping("/selectOptionList")
+    public List<Map> selectOptionList(){
+        return specificationService.selectOptionList();
+    }
 
     @RequestMapping("/findAll")
     public List<TbSpecification> findAll() {

@@ -10,6 +10,7 @@ package com.pinyougou.manage.controller;
         import java.io.Serializable;
         import java.util.Collections;
         import java.util.List;
+        import java.util.Map;
 
 @RequestMapping("/brand")
 @RestController
@@ -17,6 +18,15 @@ public class BrandController{
 
     @Reference
     private BrandService brandService;
+
+    /**
+     * 查询品牌列表
+     * @return 返回json格式: ["id":1,"text":"联想"]
+     */
+    @GetMapping("/selectOptionList")
+    public List<Map> selectOptionList(){
+       return brandService.selectOptionList();
+    }
 
     @PostMapping("/search")
     public PageResult search(@RequestParam(defaultValue = "1")Integer page,

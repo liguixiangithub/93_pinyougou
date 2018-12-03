@@ -7,6 +7,7 @@ import com.pinyougou.vo.Result;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public interface BrandService extends BaseService<TbBrand> {
     /**
@@ -25,4 +26,10 @@ public interface BrandService extends BaseService<TbBrand> {
     List<TbBrand> testPage(Integer page, Integer rows);
 
     PageResult search(Integer page, Integer rows, TbBrand brand);
+
+    /**
+     * 查询品牌列表
+     * @return 返回json格式: ["id":1,"text":"联想"]
+     */
+    List<Map> selectOptionList();
 }

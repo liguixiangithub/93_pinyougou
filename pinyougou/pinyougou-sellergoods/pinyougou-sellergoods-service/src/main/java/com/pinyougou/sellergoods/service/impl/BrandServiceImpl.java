@@ -15,6 +15,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 //暴露服务，也就是将该服务注册到注册中心;并在ioc中存在该对象
 @Service(interfaceClass = BrandService.class)
@@ -82,6 +83,11 @@ public class BrandServiceImpl extends BaseServiceImpl<TbBrand> implements BrandS
         PageInfo<TbBrand> pageInfo = new PageInfo<>(list);
 
         return new PageResult(pageInfo.getTotal(),pageInfo.getList());
+    }
+
+    @Override
+    public List<Map> selectOptionList() {
+        return brandMapper.selectOptionList();
     }
 
 
