@@ -31,11 +31,11 @@ public class SpecificationOptionController {
     public Result add(@RequestBody TbSpecificationOption specificationOption) {
         try {
             specificationOptionService.add(specificationOption);
-            return Result.ok("增加成功");
+            return Result.ok("规格选项增加成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("增加失败");
+        return Result.fail("规格选项增加失败");
     }
 
     @GetMapping("/findOne")
@@ -47,22 +47,22 @@ public class SpecificationOptionController {
     public Result update(@RequestBody TbSpecificationOption specificationOption) {
         try {
             specificationOptionService.update(specificationOption);
-            return Result.ok("修改成功");
+            return Result.ok("规格选项修改成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("修改失败");
+        return Result.fail("规格选项修改失败");
     }
 
     @GetMapping("/delete")
     public Result delete(Long[] ids) {
         try {
             specificationOptionService.deleteByIds(ids);
-            return Result.ok("删除成功");
+            return Result.ok("规格选项批量删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("删除失败");
+        return Result.fail("规格选项批量删除失败");
     }
 
     /**

@@ -32,11 +32,11 @@ public class TypeTemplateController {
     public Result add(@RequestBody TbTypeTemplate typeTemplate) {
         try {
             typeTemplateService.add(typeTemplate);
-            return Result.ok("增加成功");
+            return Result.ok("类型模板增加成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("增加失败");
+        return Result.fail("类型模板增加失败");
     }
 
     @GetMapping("/findOne")
@@ -48,22 +48,22 @@ public class TypeTemplateController {
     public Result update(@RequestBody TbTypeTemplate typeTemplate) {
         try {
             typeTemplateService.update(typeTemplate);
-            return Result.ok("修改成功");
+            return Result.ok("类型模板修改成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("修改失败");
+        return Result.fail("类型模板修改失败");
     }
 
     @GetMapping("/delete")
     public Result delete(Long[] ids) {
         try {
             typeTemplateService.deleteByIds(ids);
-            return Result.ok("删除成功");
+            return Result.ok("类型模板删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("删除失败");
+        return Result.fail("类型模板删除失败");
     }
 
     /**

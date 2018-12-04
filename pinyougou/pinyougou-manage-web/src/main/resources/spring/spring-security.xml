@@ -33,6 +33,8 @@
         <frame-options policy="SAMEORIGIN"/>
     </headers>
 
+        <!--注销-->
+        <logout/>
     </http>
 
 
