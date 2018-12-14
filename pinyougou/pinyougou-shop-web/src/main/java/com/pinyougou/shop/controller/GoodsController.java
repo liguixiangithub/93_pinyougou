@@ -17,6 +17,7 @@ public class GoodsController {
 
     @Reference
     private GoodsService goodsService;
+    private Goods goods;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -51,15 +52,34 @@ public class GoodsController {
         return Result.fail("增加失败");
     }
 
+    /**
+     * 修改商品 回显
+     * @param id
+     * @return 商品列表
+     */
     @GetMapping("/findOne")
-    public TbGoods findOne(Long id) {
-        return goodsService.findOne(id);
+    public Goods findOne(Long id) {
+        return goodsService.findGoodsById(id);
     }
 
+    /**
+     * 修改商品 回显并保存
+     * @param goods 商品基本信息
+     * @return 商品列表
+     */
     @PostMapping("/update")
-    public Result update(@RequestBody TbGoods goods) {
+    public Result update(@RequestBody Goods goods) {
+        this.goods = goods;
         try {
-            goodsService.update(goods);
+            //校验商家
+            TbGoods oldGoods = goodsService.findOne(goods.getGoods().getId());
+            String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (!sellerId.equals(oldGoods.getSellerId()) || !sellerId.equals(goods.getGoods().getSellerId())){
+                return Result.fail("非法操作");
+            }
+
+            //更新保存商品
+            goodsService.updateGoods(goods);
             return Result.ok("修改成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,7 +108,25 @@ public class GoodsController {
     @PostMapping("/search")
     public PageResult search(@RequestBody  TbGoods goods, @RequestParam(value = "page", defaultValue = "1")Integer page,
                                @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
+        String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+        goods.setSellerId(sellerId);
         return goodsService.search(page, rows, goods);
     }
 
+    /**
+     * 更新商品状态
+     * @param ids
+     * @param status
+     * @return
+     */
+    @PostMapping("/updateStatus")
+    public Result updateStatus(Long[] ids,String status) {
+        try {
+            goodsService.updateStatus(ids,status);
+            return Result.ok("更新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("更新失败");
+    }
 }

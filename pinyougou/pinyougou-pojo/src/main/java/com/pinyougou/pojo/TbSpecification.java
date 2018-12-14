@@ -31,4 +31,7 @@ public class TbSpecification implements Serializable {
     public void setSpecName(String specName) {
         this.specName = specName;
     }
+
+    public TbSpecification() {
+    }
 }
